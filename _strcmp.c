@@ -1,18 +1,12 @@
 #include "shell.h"
 
-/**
- * _strcmp - Compares two strings
- * @s1: First string
- * @s2: Second string
- *
- * Return: 0 if equal, otherwise difference
- */
-int _strcmp(char *s1, char *s2)
+/* _strcmp - compares two strings */
+int _strcmp(const char *s1, const char *s2)
 {
-	while (*s1 && (*s1 == *s2))
-	{
-		s1++;
-		s2++;
-	}
-	return (*s1 - *s2);
+    int i = 0;
+
+    while (s1[i] && s1[i] == s2[i])
+        i++;
+    return (s1[i] - s2[i]);
 }
+

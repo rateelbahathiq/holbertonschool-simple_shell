@@ -1,68 +1,42 @@
-#include "main.h"
+#include "shell.h"
 
-/**
-	* fork_and_execute - Forks and executes a command
-	* @command_path: Full path to the command
-	* @args: Array of arguments
-	* @argv0: Program name for error messages
-	*
-	* Return: Exit status of the command
-	*/
-int fork_and_execute(char *command_path, char **args, char *argv0)
+/* run_command - run a command */
+void run_command(char **args, char **env)
 {
-	pid_t pid;
-	int status;
+    pid_t pid;
+    int status;
+    char *command_path;
 
-	pid = fork();
-	if (pid == -1)
-	{
-	perror("fork");
-	free(command_path);
-	return (1);
-	}
+    if (args == NULL || args[0] == NULL)
+        return;
 
-	if (pid == 0)
-	{
-	if (execve(command_path, args, environ) == -1)
-	{
-	perror(argv0);
-	free(command_path);
-	exit(EXIT_FAILURE);
-	}
-	}
-	else
-	{
-	waitpid(pid, &status, 0);
-	free(command_path);
-	if (WIFEXITED(status))
-	return (WEXITSTATUS(status));
-	}
+    if (_strcmp(args[0], "exit") == 0)
+    {
+        free_args(args);
+        exit(EXIT_SUCCESS);
+    }
 
-	return (0);
+    command_path = find_path(args[0], env);
+    if (command_path == NULL)
+    {
+        fprintf(stderr, "%s: 1: %s: not found\n", args[0], args[0]);
+        return;
+    }
+
+    pid = fork();
+    if (pid == 0) /* child */
+    {
+        if (execve(command_path, args, env) == -1)
+        {
+            perror("execve");
+            exit(EXIT_FAILURE);
+        }
+    }
+    else if (pid > 0) /* parent */
+        wait(&status);
+    else
+        perror("fork");
+
+    free(command_path);
 }
 
-/**
-	* execute_command - Executes a command
-	* @args: Array of arguments
-	* @argv0: Program name for error messages
-	* @line: The input line (for memory cleanup on exit)
-	* @last_status: The last exit status
-	*
-	* Return: Exit status of command, or 127 if command not found
-	*/
-int execute_command(char **args, char *argv0, char *line, int last_status)
-{
-	char *command_path;
-
-	if (is_builtin(args, line, last_status))
-	return (0);
-
-	command_path = find_path(args[0]);
-	if (!command_path)
-	{
-	fprintf(stderr, "%s: 1: %s: not found\n", argv0, args[0]);
-	return (127);
-	}
-
-	return (fork_and_execute(command_path, args, argv0));
-}

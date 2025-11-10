@@ -1,41 +1,51 @@
 #include "shell.h"
 
-/**
- * find_path - Locates the full path of a command
- * @cmd: Command to find
- * @env: Environment variables
- *
- * Return: Full path to command or NULL if not found
- */
+/* find_path - finds the full path of a command */
 char *find_path(char *cmd, char **env)
 {
-	char *path, *path_copy, *dir, *full_path;
-	struct stat st;
+    char *path, *dir, *full_path;
+    char *path_copy;
+    size_t len;
+    struct stat st;
 
-	path = _getenv("PATH", env);
-	if (!path)
-		return (NULL);
+    if (cmd == NULL || env == NULL)
+        return NULL;
 
-	path_copy = strdup(path);
-	dir = strtok(path_copy, ":");
+    if (strchr(cmd, '/') != NULL) /* command already contains '/' */
+        return strdup(cmd);
 
-	while (dir)
-	{
-		full_path = malloc(strlen(dir) + strlen(cmd) + 2);
-		if (!full_path)
-			return (NULL);
+    path = _getenv("PATH", env);
+    if (path == NULL)
+        return NULL;
 
-		sprintf(full_path, "%s/%s", dir, cmd);
+    path_copy = strdup(path);
+    if (path_copy == NULL)
+    {
+        perror("strdup");
+        exit(EXIT_FAILURE);
+    }
 
-		if (stat(full_path, &st) == 0)
-		{
-			free(path_copy);
-			return (full_path);
-		}
-		free(full_path);
-		dir = strtok(NULL, ":");
-	}
+    dir = strtok(path_copy, ":");
+    while (dir != NULL)
+    {
+        len = strlen(dir) + 1 + strlen(cmd) + 1;
+        full_path = malloc(len);
+        if (full_path == NULL)
+        {
+            perror("malloc");
+            free(path_copy);
+            exit(EXIT_FAILURE);
+        }
+        sprintf(full_path, "%s/%s", dir, cmd);
 
-	free(path_copy);
-	return (NULL);
+        if (stat(full_path, &st) == 0)
+        {
+            free(path_copy);
+            return full_path;
+        }
+        free(full_path);
+        dir = strtok(NULL, ":");
+    }
+    free(path_copy);
+    return NULL;
 }
