@@ -63,14 +63,3 @@ void simple_shell(void)
 			wait(&status);
 	}
 }
-
-/**
- * main - Entry point for the simple shell
- *
- * Return: 0 always
- */
-int main(void)
-{
-	simple_shell();
-	return (0);
-}
