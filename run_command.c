@@ -5,44 +5,33 @@
 #include <sys/wait.h>
 #include "shell.h"
 
-int run_command(char **args, char **av, char **env)
+int run_command(char **args, char **env)
 {
     pid_t pid;
     int status;
-    char *command_path;
 
     if (!args || !args[0])
-        return 1;
-
-    command_path = find_path(args[0], env);
-    if (!command_path)
-    {
-        fprintf(stderr, "%s: 1: %s: not found\n", av[0], args[0]);
-        return 127;
-    }
+        return (1);
 
     pid = fork();
     if (pid == -1)
     {
         perror("fork");
-        free(command_path);
-        return 1;
+        return (1);
     }
 
-    if (pid == 0) /* Child */
+    if (pid == 0)
     {
-        if (execve(command_path, args, env) == -1)
+        if (execve(args[0], args, env) == -1)
         {
             perror("execve");
-            free(command_path);
             exit(EXIT_FAILURE);
         }
     }
-    else /* Parent */
+    else
     {
         wait(&status);
     }
 
-    free(command_path);
-    return status;
+    return (0);
 }

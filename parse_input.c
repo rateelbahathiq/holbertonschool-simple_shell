@@ -3,40 +3,30 @@
 #include <string.h>
 #include "shell.h"
 
-#define TOK_BUFSIZE 64
-#define TOK_DELIM " \t\r\n\a"
-
 char **parse_input(char *line)
 {
-    int bufsize = TOK_BUFSIZE, position = 0;
-    char **tokens = malloc(bufsize * sizeof(char *));
     char *token;
+    char **args;
+    int i = 0;
+    int bufsize = 64;
 
-    if (!tokens)
+    args = malloc(sizeof(char *) * bufsize);
+    if (!args)
+        return (NULL);
+
+    token = strtok(line, " \t\r\n");
+    while (token)
     {
-        fprintf(stderr, "allocation error\n");
-        exit(1);
-    }
-
-    token = strtok(line, TOK_DELIM);
-    while (token != NULL)
-    {
-        tokens[position] = token;
-        position++;
-
-        if (position >= bufsize)
+        args[i++] = strdup(token);
+        if (i >= bufsize)
         {
-            bufsize += TOK_BUFSIZE;
-            tokens = realloc(tokens, bufsize * sizeof(char *));
-            if (!tokens)
-            {
-                fprintf(stderr, "allocation error\n");
-                exit(1);
-            }
+            bufsize += 64;
+            args = realloc(args, sizeof(char *) * bufsize);
+            if (!args)
+                return (NULL);
         }
-
-        token = strtok(NULL, TOK_DELIM);
+        token = strtok(NULL, " \t\r\n");
     }
-    tokens[position] = NULL;
-    return tokens;
+    args[i] = NULL;
+    return (args);
 }
