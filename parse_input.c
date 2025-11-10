@@ -1,29 +1,42 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "shell.h"
 
-/**
- * parse_input - Splits input string into arguments
- * @line: Input line from user
- *
- * Return: Array of argument strings
- */
+#define TOK_BUFSIZE 64
+#define TOK_DELIM " \t\r\n\a"
+
 char **parse_input(char *line)
 {
-	char *token, **args;
-	int i = 0;
+    int bufsize = TOK_BUFSIZE, position = 0;
+    char **tokens = malloc(bufsize * sizeof(char *));
+    char *token;
 
-	args = malloc(sizeof(char *) * 64);
-	if (!args)
-	{
-		perror("malloc");
-		exit(EXIT_FAILURE);
-	}
+    if (!tokens)
+    {
+        fprintf(stderr, "allocation error\n");
+        exit(1);
+    }
 
-	token = strtok(line, " \t\r\n\a");
-	while (token)
-	{
-		args[i++] = strdup(token);
-		token = strtok(NULL, " \t\r\n\a");
-	}
-	args[i] = NULL;
-	return (args);
+    token = strtok(line, TOK_DELIM);
+    while (token != NULL)
+    {
+        tokens[position] = token;
+        position++;
+
+        if (position >= bufsize)
+        {
+            bufsize += TOK_BUFSIZE;
+            tokens = realloc(tokens, bufsize * sizeof(char *));
+            if (!tokens)
+            {
+                fprintf(stderr, "allocation error\n");
+                exit(1);
+            }
+        }
+
+        token = strtok(NULL, TOK_DELIM);
+    }
+    tokens[position] = NULL;
+    return tokens;
 }

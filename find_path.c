@@ -1,51 +1,49 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include "shell.h"
 
-/* find_path - finds the full path of a command */
-char *find_path(char *cmd, char **env)
+char *find_path(char *command, char **env)
 {
-    char *path, *dir, *full_path;
-    char *path_copy;
-    size_t len;
-    struct stat st;
+    char *path_env, *path_copy, *dir, *full_path;
+    int len;
 
-    if (cmd == NULL || env == NULL)
+    if (!command)
         return NULL;
 
-    if (strchr(cmd, '/') != NULL) /* command already contains '/' */
-        return strdup(cmd);
-
-    path = _getenv("PATH", env);
-    if (path == NULL)
+    path_env = _getenv("PATH", env);
+    if (!path_env)
         return NULL;
 
-    path_copy = strdup(path);
-    if (path_copy == NULL)
-    {
-        perror("strdup");
-        exit(EXIT_FAILURE);
-    }
+    path_copy = strdup(path_env);
+    if (!path_copy)
+        return NULL;
 
     dir = strtok(path_copy, ":");
-    while (dir != NULL)
+    while (dir)
     {
-        len = strlen(dir) + 1 + strlen(cmd) + 1;
+        len = strlen(dir) + 1 + strlen(command) + 1;
         full_path = malloc(len);
-        if (full_path == NULL)
+        if (!full_path)
         {
-            perror("malloc");
             free(path_copy);
-            exit(EXIT_FAILURE);
+            return NULL;
         }
-        sprintf(full_path, "%s/%s", dir, cmd);
+        strcpy(full_path, dir);
+        strcat(full_path, "/");
+        strcat(full_path, command);
 
-        if (stat(full_path, &st) == 0)
+        if (access(full_path, X_OK) == 0)
         {
             free(path_copy);
             return full_path;
         }
+
         free(full_path);
         dir = strtok(NULL, ":");
     }
+
     free(path_copy);
     return NULL;
 }

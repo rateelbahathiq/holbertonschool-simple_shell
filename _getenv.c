@@ -1,17 +1,18 @@
-#include "shell.h"
+#include <string.h> /* for strlen, strncmp */
+#include <stdlib.h>
 
-/* _getenv - get the value of an environment variable */
+/* Get the value of an environment variable */
 char *_getenv(const char *name, char **env)
 {
     int i, len;
 
-    if (name == NULL || env == NULL)
+    if (!name || !env)
         return NULL;
 
     len = strlen(name);
-    for (i = 0; env[i] != NULL; i++)
+    for (i = 0; env[i]; i++)
     {
-        if (strncmp(env[i], name, len) == 0 && env[i][len] == '=')
+        if (strncmp(name, env[i], len) == 0 && env[i][len] == '=')
             return env[i] + len + 1;
     }
     return NULL;
