@@ -1,40 +1,77 @@
-#include "shell.h"
+#include "main.h"
+
+extern char **environ;
 
 /**
- * main - Entry point for the simple shell
- * @ac: Argument count
- * @av: Argument vector
- * @env: Environment variables
+ * simple_shell - Simple UNIX command line interpreter
  *
- * Return: 0 on success
+ * Description:
+ * Displays a prompt and waits for the user to type a command.
+ * Executes only one-word commands (no arguments).
+ * If command not found, prints an error message.
+ * Handles end-of-file (Ctrl+D).
+ *
+ * Return: Nothing
  */
-int main(int ac, char **av, char **env)
+void simple_shell(void)
 {
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t nread;
-	char **args;
-	(void)ac;
+	pid_t pid;
+	int status;
+	char *argv[2]; /* Command + NULL terminator */
 
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, "$ ", 2);
+			write(STDOUT_FILENO, "#cisfun$ ", 9);
 
 		nread = getline(&line, &len, stdin);
 		if (nread == -1)
 		{
+			if (isatty(STDIN_FILENO))
+				write(STDOUT_FILENO, "\n", 1);
 			free(line);
-			exit(EXIT_SUCCESS);
+			exit(0);
 		}
 
-		args = parse_input(line);
-		if (args[0] != NULL)
-			execute_command(args, av, env);
+		if (line[nread - 1] == '\n')
+			line[nread - 1] = '\0';
 
-		free_args(args);
+		if (line[0] == '\0')
+			continue;
+
+		pid = fork();
+		if (pid == -1)
+		{
+			perror("Error:");
+			free(line);
+			exit(1);
+		}
+
+		if (pid == 0)
+		{
+			argv[0] = line;
+			argv[1] = NULL;
+
+			if (execve(line, argv, environ) == -1)
+				perror("./shell");
+			exit(1);
+		}
+		else
+			wait(&status);
 	}
-	return (0);
-
-
 }
+
+/**
+ * main - Entry point for the simple shell
+ *
+ * Return: 0 always
+ */
+int main(void)
+{
+	simple_shell();
+	return (0);
+}
+
