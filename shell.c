@@ -1,65 +1,89 @@
-#include "shell.h"
-
-extern char **environ;
+#include "main.h"
 
 /**
- * simple_shell - Simple UNIX command line interpreter
- *
- * Description:
- * Displays a prompt and waits for the user to type a command.
- * Executes only one-word commands (no arguments).
- * If command not found, prints an error message.
- * Handles end-of-file (Ctrl+D).
- *
- * Return: Nothing
- */
-void simple_shell(void)
+	* display_prompt - Displays the shell prompt
+	*
+	* Return: void
+	*/
+void display_prompt(void)
+{
+	write(STDOUT_FILENO, "$ ", 2);
+	fflush(stdout);
+}
+
+/**
+	* read_line - Reads a line from stdin
+	*
+	* Return: Pointer to the line read, or NULL on EOF
+	*/
+char *read_line(void)
 {
 	char *line = NULL;
-	size_t len = 0;
+	size_t bufsize = 0;
 	ssize_t nread;
-	pid_t pid;
-	int status;
-	char *argv[2]; /* Command + NULL terminator */
 
-	while (1)
+	nread = getline(&line, &bufsize, stdin);
+	if (nread == -1)
 	{
-		if (isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, "#cisfun$ ", 9);
-
-		nread = getline(&line, &len, stdin);
-		if (nread == -1)
-		{
-			if (isatty(STDIN_FILENO))
-				write(STDOUT_FILENO, "\n", 1);
-			free(line);
-			exit(0);
-		}
-
-		if (line[nread - 1] == '\n')
-			line[nread - 1] = '\0';
-
-		if (line[0] == '\0')
-			continue;
-
-		pid = fork();
-		if (pid == -1)
-		{
-			perror("Error:");
-			free(line);
-			exit(1);
-		}
-
-		if (pid == 0)
-		{
-			argv[0] = line;
-			argv[1] = NULL;
-
-			if (execve(line, argv, environ) == -1)
-				perror("./shell");
-			exit(1);
-		}
-		else
-			wait(&status);
+	free(line);
+	return (NULL);
 	}
+
+	if (line[nread - 1] == '\n')
+	line[nread - 1] = '\0';
+
+	return (line);
+}
+
+/**
+	* parse_line - Parses a line into arguments
+	* @line: The line to parse
+	*
+	* Return: Array of arguments
+	*/
+char **parse_line(char *line)
+{
+	int bufsize = 64, position = 0;
+	char **tokens = malloc(bufsize * sizeof(char *));
+	char *token;
+
+	if (!tokens)
+	{
+	perror("malloc");
+	exit(EXIT_FAILURE);
+	}
+
+	token = strtok(line, " \t\r\n\a");
+	while (token != NULL)
+	{
+	tokens[position] = token;
+	position++;
+
+	if (position >= bufsize)
+	{
+	bufsize += 64;
+	tokens = realloc(tokens, bufsize * sizeof(char *));
+	if (!tokens)
+	{
+	perror("realloc");
+	exit(EXIT_FAILURE);
+	}
+	}
+
+	token = strtok(NULL, " \t\r\n\a");
+	}
+	tokens[position] = NULL;
+	return (tokens);
+}
+
+/**
+	* free_array - Frees an array of strings
+	* @array: The array to free
+	*
+	* Return: void
+	*/
+void free_array(char **array)
+{
+	if (array)
+	free(array);
 }
