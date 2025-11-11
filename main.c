@@ -10,7 +10,7 @@ int main(int ac, char **av)
     int last_status = 0;
     const char *prog = (av && av[0]) ? av[0] : "./hsh";
 
-    (void)ac; /* unused */
+    (void)ac;
 
     while (1)
     {
@@ -22,10 +22,18 @@ int main(int ac, char **av)
             break;
         }
 
-        lineno++; /* increment command line count */
+        lineno++;
 
         args = parse_input(line);
         if (args && args[0]) {
+            /* ✅ Built-in: exit (no args) — handle here so we can free first */
+            if (strcmp(args[0], "exit") == 0) {
+                free_args(args);
+                free(line);
+                last_status = 0;       /* per task: no arg handling, status 0 */
+                break;                 /* clean exit with no leaks */
+            }
+
             last_status = run_command(args, environ, prog, lineno);
         }
 
@@ -33,6 +41,5 @@ int main(int ac, char **av)
         free(line);
     }
 
-    /* IMPORTANT: return the last command status (checker expects 127) */
     return last_status;
 }
