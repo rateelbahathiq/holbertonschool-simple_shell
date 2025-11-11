@@ -1,48 +1,28 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include "shell.h"
+#include "main.h"
 
-int main(int ac, char **av, char **env)
+extern char **environ;
+
+int main(void)
 {
     char *line = NULL;
-    size_t len = 0;
-    ssize_t nread;
-    char **args;
-
-    (void)ac;
-    (void)av;
+    char **args = NULL;
 
     while (1)
     {
-        if (isatty(STDIN_FILENO))
-            printf("$ ");
+        display_prompt();              /* show "$ " only if TTY */
 
-        nread = getline(&line, &len, stdin);
-        if (nread == -1)
-        {
-            free(line);
-            exit(0);
-        }
-
-        if (line[nread - 1] == '\n')
-            line[nread - 1] = '\0';
-
-        args = parse_input(line);
-        if (!args)
-            continue;
-
-        if (_strcmp(args[0], "exit") == 0)
-        {
-            free_args(args);
+        line = read_line();            /* NULL on EOF (Ctrl+D) */
+        if (!line) {
+            if (isatty(STDIN_FILENO)) write(STDOUT_FILENO, "\n", 1);
             break;
         }
 
-        run_command(args, env);
-        free_args(args);
-    }
+        args = parse_input(line);      /* tokens reference 'line' */
+        if (args && args[0])
+            run_command(args, environ);/* 0.2: resolve first, don't fork if missing */
 
-    free(line);
-    return (0);
+        free_args(args);               /* frees only the array */
+        free(line);                    /* free the owning buffer */
+    }
+    return 0;
 }

@@ -1,5 +1,5 @@
 /* run.c */
-#include "shell.h"
+#include "main.h"
 
 extern char **environ;
 

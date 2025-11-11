@@ -1,29 +1,6 @@
 /* path.c */
-#include "shell.h"
+#include "main.h"
 
-/* Optional custom strcmp; you may use strcmp instead */
-int _strcmp(const char *s1, const char *s2)
-{
-	while (*s1 && (*s1 == *s2)) { s1++; s2++; }
-	return ((unsigned char)*s1 - (unsigned char)*s2);
-}
-
-/* getenv using provided env (envp) */
-char *_getenv(const char *name, char **env)
-{
-	size_t nlen = strlen(name);
-	int i;
-
-	if (!name || !env)
-		return (NULL);
-
-	for (i = 0; env[i]; i++)
-	{
-		if (strncmp(env[i], name, nlen) == 0 && env[i][nlen] == '=')
-			return (env[i] + nlen + 1);
-	}
-	return (NULL);
-}
 
 static int is_executable_file(const char *path)
 {

@@ -1,4 +1,4 @@
-#include "shell.h"
+#include "main.h"
 #include <string.h>
 
 char *_getenv(const char *name, char **env)

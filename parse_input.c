@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "shell.h"
+#include "main.h"
 
 char **parse_input(char *line)
 {
