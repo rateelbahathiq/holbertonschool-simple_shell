@@ -26,12 +26,11 @@ int main(int ac, char **av)
 
         args = parse_input(line);
         if (args && args[0]) {
-            /* ✅ Built-in: exit (no args) — handle here so we can free first */
+            /* Built-in: exit (no args) — keep last_status; don't reset it */
             if (strcmp(args[0], "exit") == 0) {
                 free_args(args);
                 free(line);
-                last_status = 0;       /* per task: no arg handling, status 0 */
-                break;                 /* clean exit with no leaks */
+                break;              /* exit with whatever last_status currently is */
             }
 
             last_status = run_command(args, environ, prog, lineno);
@@ -41,5 +40,5 @@ int main(int ac, char **av)
         free(line);
     }
 
-    return last_status;
+    return last_status;  /* this will be 2 for the failing ls case */
 }
