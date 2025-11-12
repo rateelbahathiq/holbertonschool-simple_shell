@@ -10,8 +10,6 @@ It mimics a subset of the features of the standard shell (`sh`), including:
 - Handling commands found in the `PATH`.
 - Implementing the built-in commands: `exit` and `env`.
 
-## Compilation
-Compile all `.c` files using:
 
 ## Features
 - Displays a prompt and waits for user input.
@@ -86,5 +84,5 @@ $
 
 ## Author
 - Rateel Bahathiq `<rateelbahathiq@gmail.com>`
-- Thekra Alhenaki `<your.email@holbertonstudents.com>`
+- Thekra Alhenaki `<thekrawaleed9@gmail.com>`
 
