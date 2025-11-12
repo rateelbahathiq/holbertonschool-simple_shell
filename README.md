@@ -36,9 +36,10 @@ Compile all `.c` files using:
 
 
 ## Examples
-0.1— Basic Shel
+### 0.1— Basic Shel
 Task: Display a prompt, read input, execute simple one-word commands (no arguments).
 
+```bash
 $ ./hsh
 ($) /bin/ls
 README.md shell.c main.c
