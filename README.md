@@ -86,5 +86,5 @@ $
 
 ## Author
 - Rateel Bahathiq `<rateelbahathiq@gmail.com>`
-- Rateel Bahathiq `<your.email@holbertonstudents.com>`
+- Thekra Alhenaki `<your.email@holbertonstudents.com>`
 

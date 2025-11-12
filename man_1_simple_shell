@@ -1,0 +1,120 @@
+.TH SIMPLE_SHELL 1 "November 2025" "Holberton School" "User Commands"
+
+.SH NAME
+simple_shell \- a simple UNIX command line interpreter
+
+.SH SYNOPSIS
+.B ./hsh
+.RI [ command ]
+
+.SH DESCRIPTION
+The
+.B simple_shell
+program provides a command line interface that allows the user to execute UNIX commands.
+It mimics basic functionalities of standard shells such as
+.BR sh (1)
+and
+.BR bash (1),
+including:
+
+.IP \[bu] 2
+Displaying a prompt and waiting for user input.
+.IP \[bu] 2
+Executing commands with arguments.
+.IP \[bu] 2
+Searching for executables in the
+.BR PATH .
+.IP \[bu] 2
+Handling built-in commands such as
+.BR exit
+and
+.BR env .
+
+.SH TASKS AND EXAMPLES
+
+.SS 0.1 \- Basic Shell
+Display a prompt, read input, and execute simple one-word commands.
+
+.EX
+$ ./hsh
+($) /bin/ls
+README.md  main.h  main.c
+($)
+.EE
+
+.SS 0.2 \- Handle PATH
+Allow commands without full paths. The shell searches each directory in the PATH variable.
+If the command does not exist, it prints an error and does not call fork().
+
+.EX
+$ ./hsh
+($) ls
+README.md  main.c  main.h
+($) fakecommand
+./hsh: 1: fakecommand: not found
+($)
+.EE
+
+.SS 0.3 \- Exit Built-in
+Implement the built-in command
+.B exit
+that terminates the shell.
+
+.EX
+$ ./hsh
+($) ls
+main.c  run.c
+($) exit
+$
+.EE
+
+.SS 0.4 \- Env Built-in
+Implement the built-in command
+.B env
+that prints the current environment variables.
+
+.EX
+$ ./hsh
+($) env
+USER=julien
+PATH=/usr/local/bin:/usr/bin:/bin
+HOME=/home/julien
+($)
+.EE
+
+.SH RETURN VALUE
+The exit status of
+.B simple_shell
+is the exit status of the last executed command.
+
+.SH FILES
+.TP
+.B main.h
+Header file containing all function prototypes and macros.
+.TP
+.B main.c
+Main loop of the shell.
+.TP
+.B run.c
+Handles execution of commands and built-ins.
+.TP
+.B path.c
+Searches for commands in the PATH directories.
+.TP
+.B parse_input.c
+Splits user input into tokens.
+.TP
+.B free_args.c
+Frees dynamically allocated argument arrays.
+
+.SH AUTHOR
+Rateel Bahathek <rateelbahathiq@gmail.com>
+Thekra Alhenaki <>
+
+.SH SEE ALSO
+.BR sh (1),
+.BR bash (1)
+
+.SH COPYRIGHT
+Holberton School (C) 2025
+
