@@ -59,7 +59,7 @@ README.md main.h main.c
 ($)
 ```
 
-###0.3 — Exit Built-in
+### 0.3 — Exit Built-in
 Task: Implement the built-in command exit that terminates the shell.
 
 ```bash
@@ -70,7 +70,7 @@ main.c run.c
 $
 ```
 
-###0.4 — Env Built-in
+### 0.4 — Env Built-in
 Task: Implement the env built-in command that prints the current environment variables.
 
 ```bash
