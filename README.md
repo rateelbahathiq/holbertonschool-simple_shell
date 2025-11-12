@@ -42,7 +42,7 @@ Task: Display a prompt, read input, execute simple one-word commands (no argumen
 ```bash
 $ ./hsh
 ($) /bin/ls
-README.md shell.c main.c
+README.md main.h  main.c
 ($)
 ```
 
